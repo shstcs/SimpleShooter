@@ -37,5 +37,11 @@ private:
 	UParticleSystem* MuzzleFlash;
 
 	UPROPERTY(EditAnywhere)
-	float MaxRange = 1000;
+	UParticleSystem* ImpactEffect;
+
+	UPROPERTY(EditAnywhere)
+	float MaxRange = 3000;
+
+	UPROPERTY(EditAnywhere)
+	float Damage = 10;
 };
