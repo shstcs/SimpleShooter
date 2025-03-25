@@ -24,6 +24,10 @@ protected:
 public:	
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const { return Health <= 0; }
+
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercent() const { return Health / MaxHealth; }
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
