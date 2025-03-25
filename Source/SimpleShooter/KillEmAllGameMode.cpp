@@ -4,12 +4,14 @@
 #include "KillEmAllGameMode.h"
 
 
+
 void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 {
     APlayerController* PlayerController = Cast<APlayerController>(PawnKilled->GetController());
     if(PlayerController != nullptr)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Pawn Alive"));
+        UE_LOG(LogTemp, Warning, TEXT("Player Dead"));
+        PlayerController->GameHasEnded(nullptr, false);
     }
     else
     {
