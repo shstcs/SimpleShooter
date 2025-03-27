@@ -25,6 +25,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void Reload();
+
+	UFUNCTION(BlueprintPure)
+	int GetAmmo() const { return CurrentAmmo; }
+
+	UFUNCTION(BlueprintPure)
+	int GetTotalAmmo() const { return TotalAmmo; }
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -50,6 +58,24 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float Damage = 10;
+
+	UPROPERTY(EditAnywhere)
+	int MaxAmmo = 20;
+
+	UPROPERTY()
+	int CurrentAmmo;
+
+	UPROPERTY(EditAnywhere)
+	int TotalAmmo = 100;
+
+	UPROPERTY(EditAnywhere)
+	float AttackRate = 0.3f;
+
+	bool bCanShoot = true;
+
+	FTimerHandle ShootCooldownTimer;
+
+	void ResetTimer();
 
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 

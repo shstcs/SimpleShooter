@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include "Engine/DamageEvents.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "TimerManager.h"
  
 
 // Sets default values
@@ -24,7 +25,7 @@ AGun::AGun()
 void AGun::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	Reload();
 }
 
 // Called every frame
@@ -36,6 +37,14 @@ void AGun::Tick(float DeltaTime)
 
 void AGun::PullTrigger()
 {
+	if(!bCanShoot) return;
+	if(CurrentAmmo <= 0)
+	{
+		Reload();
+		return;
+	}
+	CurrentAmmo--;
+	
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
 
@@ -56,6 +65,9 @@ void AGun::PullTrigger()
 			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 		}
 	}
+
+	bCanShoot = false;
+	GetWorldTimerManager().SetTimer(ShootCooldownTimer, this, &AGun::ResetTimer, AttackRate);
 
 }
 
@@ -83,4 +95,26 @@ AController* AGun::GetOwnerController() const
 	if (OwnerPawn == nullptr) return nullptr;
 
 	return OwnerPawn->GetController();
+}
+
+void AGun::ResetTimer()
+{
+	bCanShoot = true;
+}
+
+void AGun::Reload()
+{
+	if (TotalAmmo <= 0) return;
+
+	int NeededAmmo = MaxAmmo - CurrentAmmo;
+	if (TotalAmmo >= NeededAmmo)
+	{
+		TotalAmmo -= NeededAmmo;
+		CurrentAmmo = MaxAmmo;
+	}
+	else
+	{
+		CurrentAmmo += TotalAmmo;
+		TotalAmmo = 0;
+	}
 }

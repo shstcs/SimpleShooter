@@ -28,14 +28,14 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const { return Health / MaxHealth; }
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	
+	UFUNCTION(BlueprintCallable)
+	AGun* GetGun() const { if(Gun) return Gun; return nullptr; }
+
 	void Shoot();
 
 private:
@@ -44,11 +44,17 @@ private:
 	void LookUp(float AxisValue);
 	void LookRight(float AxisValue);
 
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AGun> GunClass;
+	void SwitchRifle();
+	void SwitchLauncher();
+
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<AGun>> GunClasses;
 
 	UPROPERTY()
 	AGun* Gun;
+
+	UPROPERTY()
+	int CurrentGunType = 0;
 
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;

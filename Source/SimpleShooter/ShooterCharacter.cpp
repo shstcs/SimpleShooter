@@ -10,26 +10,18 @@ AShooterCharacter::AShooterCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
 void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
+	Gun = GetWorld()->SpawnActor<AGun>(GunClasses[CurrentGunType]);
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
 	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
 	Gun->SetOwner(this);
 
 	Health = MaxHealth;
-}
-
-// Called every frame
-void AShooterCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -43,6 +35,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis("LookRight", this, &AShooterCharacter::LookRight);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AShooterCharacter::Shoot);
+	PlayerInputComponent->BindKey(EKeys::One, IE_Pressed, this, &AShooterCharacter::SwitchRifle);
+	PlayerInputComponent->BindKey(EKeys::Two, IE_Pressed, this, &AShooterCharacter::SwitchLauncher);
 }
 
 float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -60,6 +54,28 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 	return DamageApplied;
+}
+
+void AShooterCharacter::SwitchRifle()
+{
+	if (CurrentGunType == 0) return;
+	CurrentGunType = 0;
+	Gun->Destroy();
+	Gun = GetWorld()->SpawnActor<AGun>(GunClasses[CurrentGunType]);
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+	Gun->SetOwner(this);
+}
+
+void AShooterCharacter::SwitchLauncher()
+{
+	if (CurrentGunType == 1) return;
+	CurrentGunType = 1;
+	Gun->Destroy();
+	Gun = GetWorld()->SpawnActor<AGun>(GunClasses[CurrentGunType]);
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+	Gun->SetOwner(this);
 }
 
 void AShooterCharacter::MoveForward(float AxisValue)
