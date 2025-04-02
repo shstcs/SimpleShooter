@@ -53,6 +53,9 @@ private:
 	UPROPERTY()
 	AGun* Gun;
 
+	UPROPERTY(VisibleAnywhere)
+	TArray<AGun*> GunHolders;
+
 	UPROPERTY()
 	int CurrentGunType = 0;
 

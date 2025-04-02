@@ -118,3 +118,9 @@ void AGun::Reload()
 		TotalAmmo = 0;
 	}
 }
+
+void AGun::SetAmmo(int Total, int Current)
+{
+	TotalAmmo = Total;
+	CurrentAmmo = Current;
+}

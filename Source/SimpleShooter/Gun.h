@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	int GetTotalAmmo() const { return TotalAmmo; }
 
+	UFUNCTION()
+	void SetAmmo(int Total, int Current);
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;

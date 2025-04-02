@@ -16,11 +16,25 @@ AShooterCharacter::AShooterCharacter()
 void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	Gun = GetWorld()->SpawnActor<AGun>(GunClasses[CurrentGunType]);
+	
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
-	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
-	Gun->SetOwner(this);
 
+	if(GunClasses.Num() >= 2)
+	{
+		GunHolders.Add(GetWorld()->SpawnActor<AGun>(GunClasses[0]));
+		GunHolders.Add(GetWorld()->SpawnActor<AGun>(GunClasses[1]));
+
+		GunHolders[0]->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("RifleSocket"));
+		GunHolders[1]->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("LauncherSocket"));
+
+		GunHolders[0]->SetOwner(this);
+		GunHolders[1]->SetOwner(this);
+
+		GunHolders[0]->SetActorHiddenInGame(false);
+		GunHolders[1]->SetActorHiddenInGame(true);
+		
+		Gun = GunHolders[0];
+	}
 	Health = MaxHealth;
 }
 
@@ -60,22 +74,22 @@ void AShooterCharacter::SwitchRifle()
 {
 	if (CurrentGunType == 0) return;
 	CurrentGunType = 0;
-	Gun->Destroy();
-	Gun = GetWorld()->SpawnActor<AGun>(GunClasses[CurrentGunType]);
-	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
-	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
-	Gun->SetOwner(this);
+	
+	GunHolders[0]->SetActorHiddenInGame(false);
+	GunHolders[1]->SetActorHiddenInGame(true);
+
+	Gun = GunHolders[0];
 }
 
 void AShooterCharacter::SwitchLauncher()
 {
 	if (CurrentGunType == 1) return;
 	CurrentGunType = 1;
-	Gun->Destroy();
-	Gun = GetWorld()->SpawnActor<AGun>(GunClasses[CurrentGunType]);
-	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
-	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
-	Gun->SetOwner(this);
+	
+	GunHolders[0]->SetActorHiddenInGame(true);
+	GunHolders[1]->SetActorHiddenInGame(false);
+
+	Gun = GunHolders[1];
 }
 
 void AShooterCharacter::MoveForward(float AxisValue)
